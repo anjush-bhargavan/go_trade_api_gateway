@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "./";
+
+service UserService {
+    rpc UserSignup(Signup) returns(Response);
+    rpc VerfiyUser(OTP) returns (Response);
+    rpc UserLogin(Login) returns (Response);
+
+    rpc ViewProfile(ID) returns (Profile); 
+    rpc EditProfile(Profile) returns(Profile);
+    rpc ChangePassword(Password) returns(Response);
+
+    rpc AddAddress(Address) returns(Response);
+    rpc ViewAllAddress(NoParam) returns(AddressList);
+    rpc EditAddress(Address) returns(Address);
+    rpc RemoveAddress(IDs) returns(Response);
+    
+
+    rpc BeASeller(ID) returns (Response) ;
+    rpc AddProduct(SellerProdcut) returns (Response);
+}
+
+
+message NoParam {}
+
+message Response {
+    string Status = 1;
+    string Message = 2;
+    string Error = 3;
+}
+
+message Signup {
+    string User_Name = 1;
+    string Email = 2;
+    string Password = 3;
+    string Mobile = 4;
+    string Referral_Code = 5;
+};
+
+message OTP {
+    string Email = 1;
+    string OTP = 2;
+}
+
+message Login {
+    string Email = 1;
+    string Password = 2;
+}
+
+message ID {
+    uint32 ID = 1;
+}
+
+message IDs {
+    uint32 ID = 1;
+    uint32 User_ID = 2;
+}
+
+message Profile {
+    uint32 User_ID = 1;
+    string User_Name = 2;
+    string Email = 3; 
+    string Mobile = 4;
+    string Referral_Code = 5;
+    float Wallet = 6;
+}
+
+message Address {
+    uint32 ID = 7;
+    uint32 User_ID = 1;
+    string House = 2;
+    string Street = 3;
+    string City = 4;
+    uint32 Zip = 5;
+    string State = 6;
+}
+
+message AddressList {
+    repeated Address Addresses = 1;
+}
+
+message Password {
+    uint32 User_ID = 1;
+    string Old_Password = 2;
+    string New_Password = 3;
+    string Confirm_Password = 4;
+}
+
+message SellerProdcut {
+    string Name = 1;
+    uint32 Seller_ID = 2;
+    uint32 Category = 3;
+    uint32 Base_Price = 4;
+    string Description = 5;
+    bool   Bidding_Type = 6;
+    string Bidding_Start_Time = 7;
+    string Bidiing_End_Time = 8;
+    string Listed_On = 9;
+    
+}
