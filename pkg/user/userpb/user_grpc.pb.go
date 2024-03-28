@@ -19,18 +19,30 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_UserSignup_FullMethodName     = "/pb.UserService/UserSignup"
-	UserService_VerfiyUser_FullMethodName     = "/pb.UserService/VerfiyUser"
-	UserService_UserLogin_FullMethodName      = "/pb.UserService/UserLogin"
-	UserService_ViewProfile_FullMethodName    = "/pb.UserService/ViewProfile"
-	UserService_EditProfile_FullMethodName    = "/pb.UserService/EditProfile"
-	UserService_ChangePassword_FullMethodName = "/pb.UserService/ChangePassword"
-	UserService_AddAddress_FullMethodName     = "/pb.UserService/AddAddress"
-	UserService_ViewAllAddress_FullMethodName = "/pb.UserService/ViewAllAddress"
-	UserService_EditAddress_FullMethodName    = "/pb.UserService/EditAddress"
-	UserService_RemoveAddress_FullMethodName  = "/pb.UserService/RemoveAddress"
-	UserService_BeASeller_FullMethodName      = "/pb.UserService/BeASeller"
-	UserService_AddProduct_FullMethodName     = "/pb.UserService/AddProduct"
+	UserService_UserSignup_FullMethodName                = "/pb.UserService/UserSignup"
+	UserService_VerfiyUser_FullMethodName                = "/pb.UserService/VerfiyUser"
+	UserService_UserLogin_FullMethodName                 = "/pb.UserService/UserLogin"
+	UserService_ViewProfile_FullMethodName               = "/pb.UserService/ViewProfile"
+	UserService_EditProfile_FullMethodName               = "/pb.UserService/EditProfile"
+	UserService_ChangePassword_FullMethodName            = "/pb.UserService/ChangePassword"
+	UserService_BlockUser_FullMethodName                 = "/pb.UserService/BlockUser"
+	UserService_AddAddress_FullMethodName                = "/pb.UserService/AddAddress"
+	UserService_ViewAllAddress_FullMethodName            = "/pb.UserService/ViewAllAddress"
+	UserService_EditAddress_FullMethodName               = "/pb.UserService/EditAddress"
+	UserService_RemoveAddress_FullMethodName             = "/pb.UserService/RemoveAddress"
+	UserService_BeASeller_FullMethodName                 = "/pb.UserService/BeASeller"
+	UserService_AddProduct_FullMethodName                = "/pb.UserService/AddProduct"
+	UserService_EditProductUser_FullMethodName           = "/pb.UserService/EditProductUser"
+	UserService_RemoveProductUser_FullMethodName         = "/pb.UserService/RemoveProductUser"
+	UserService_FindProductByIDUser_FullMethodName       = "/pb.UserService/FindProductByIDUser"
+	UserService_FindProductByCategoryUser_FullMethodName = "/pb.UserService/FindProductByCategoryUser"
+	UserService_FindAllProductsUser_FullMethodName       = "/pb.UserService/FindAllProductsUser"
+	UserService_FindCategory_FullMethodName              = "/pb.UserService/FindCategory"
+	UserService_FindCategories_FullMethodName            = "/pb.UserService/FindCategories"
+	UserService_AddToWatchlist_FullMethodName            = "/pb.UserService/AddToWatchlist"
+	UserService_ViewWatchlist_FullMethodName             = "/pb.UserService/ViewWatchlist"
+	UserService_AddBid_FullMethodName                    = "/pb.UserService/AddBid"
+	UserService_GetBids_FullMethodName                   = "/pb.UserService/GetBids"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -43,12 +55,24 @@ type UserServiceClient interface {
 	ViewProfile(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Profile, error)
 	EditProfile(ctx context.Context, in *Profile, opts ...grpc.CallOption) (*Profile, error)
 	ChangePassword(ctx context.Context, in *Password, opts ...grpc.CallOption) (*Response, error)
+	BlockUser(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Response, error)
 	AddAddress(ctx context.Context, in *Address, opts ...grpc.CallOption) (*Response, error)
 	ViewAllAddress(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*AddressList, error)
 	EditAddress(ctx context.Context, in *Address, opts ...grpc.CallOption) (*Address, error)
 	RemoveAddress(ctx context.Context, in *IDs, opts ...grpc.CallOption) (*Response, error)
 	BeASeller(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Response, error)
-	AddProduct(ctx context.Context, in *SellerProdcut, opts ...grpc.CallOption) (*Response, error)
+	AddProduct(ctx context.Context, in *UserProduct, opts ...grpc.CallOption) (*Response, error)
+	EditProductUser(ctx context.Context, in *UserProduct, opts ...grpc.CallOption) (*UserProduct, error)
+	RemoveProductUser(ctx context.Context, in *IDs, opts ...grpc.CallOption) (*Response, error)
+	FindProductByIDUser(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserProduct, error)
+	FindProductByCategoryUser(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserProductList, error)
+	FindAllProductsUser(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*UserProductList, error)
+	FindCategory(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserCategory, error)
+	FindCategories(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*UserCategoryList, error)
+	AddToWatchlist(ctx context.Context, in *IDs, opts ...grpc.CallOption) (*Response, error)
+	ViewWatchlist(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserCategoryList, error)
+	AddBid(ctx context.Context, in *UserBid, opts ...grpc.CallOption) (*Response, error)
+	GetBids(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserBidList, error)
 }
 
 type userServiceClient struct {
@@ -113,6 +137,15 @@ func (c *userServiceClient) ChangePassword(ctx context.Context, in *Password, op
 	return out, nil
 }
 
+func (c *userServiceClient) BlockUser(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, UserService_BlockUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) AddAddress(ctx context.Context, in *Address, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, UserService_AddAddress_FullMethodName, in, out, opts...)
@@ -158,9 +191,108 @@ func (c *userServiceClient) BeASeller(ctx context.Context, in *ID, opts ...grpc.
 	return out, nil
 }
 
-func (c *userServiceClient) AddProduct(ctx context.Context, in *SellerProdcut, opts ...grpc.CallOption) (*Response, error) {
+func (c *userServiceClient) AddProduct(ctx context.Context, in *UserProduct, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, UserService_AddProduct_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) EditProductUser(ctx context.Context, in *UserProduct, opts ...grpc.CallOption) (*UserProduct, error) {
+	out := new(UserProduct)
+	err := c.cc.Invoke(ctx, UserService_EditProductUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RemoveProductUser(ctx context.Context, in *IDs, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, UserService_RemoveProductUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) FindProductByIDUser(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserProduct, error) {
+	out := new(UserProduct)
+	err := c.cc.Invoke(ctx, UserService_FindProductByIDUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) FindProductByCategoryUser(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserProductList, error) {
+	out := new(UserProductList)
+	err := c.cc.Invoke(ctx, UserService_FindProductByCategoryUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) FindAllProductsUser(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*UserProductList, error) {
+	out := new(UserProductList)
+	err := c.cc.Invoke(ctx, UserService_FindAllProductsUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) FindCategory(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserCategory, error) {
+	out := new(UserCategory)
+	err := c.cc.Invoke(ctx, UserService_FindCategory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) FindCategories(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*UserCategoryList, error) {
+	out := new(UserCategoryList)
+	err := c.cc.Invoke(ctx, UserService_FindCategories_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) AddToWatchlist(ctx context.Context, in *IDs, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, UserService_AddToWatchlist_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ViewWatchlist(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserCategoryList, error) {
+	out := new(UserCategoryList)
+	err := c.cc.Invoke(ctx, UserService_ViewWatchlist_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) AddBid(ctx context.Context, in *UserBid, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, UserService_AddBid_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetBids(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserBidList, error) {
+	out := new(UserBidList)
+	err := c.cc.Invoke(ctx, UserService_GetBids_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -177,12 +309,24 @@ type UserServiceServer interface {
 	ViewProfile(context.Context, *ID) (*Profile, error)
 	EditProfile(context.Context, *Profile) (*Profile, error)
 	ChangePassword(context.Context, *Password) (*Response, error)
+	BlockUser(context.Context, *ID) (*Response, error)
 	AddAddress(context.Context, *Address) (*Response, error)
 	ViewAllAddress(context.Context, *NoParam) (*AddressList, error)
 	EditAddress(context.Context, *Address) (*Address, error)
 	RemoveAddress(context.Context, *IDs) (*Response, error)
 	BeASeller(context.Context, *ID) (*Response, error)
-	AddProduct(context.Context, *SellerProdcut) (*Response, error)
+	AddProduct(context.Context, *UserProduct) (*Response, error)
+	EditProductUser(context.Context, *UserProduct) (*UserProduct, error)
+	RemoveProductUser(context.Context, *IDs) (*Response, error)
+	FindProductByIDUser(context.Context, *ID) (*UserProduct, error)
+	FindProductByCategoryUser(context.Context, *ID) (*UserProductList, error)
+	FindAllProductsUser(context.Context, *NoParam) (*UserProductList, error)
+	FindCategory(context.Context, *ID) (*UserCategory, error)
+	FindCategories(context.Context, *NoParam) (*UserCategoryList, error)
+	AddToWatchlist(context.Context, *IDs) (*Response, error)
+	ViewWatchlist(context.Context, *ID) (*UserCategoryList, error)
+	AddBid(context.Context, *UserBid) (*Response, error)
+	GetBids(context.Context, *ID) (*UserBidList, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -208,6 +352,9 @@ func (UnimplementedUserServiceServer) EditProfile(context.Context, *Profile) (*P
 func (UnimplementedUserServiceServer) ChangePassword(context.Context, *Password) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
+func (UnimplementedUserServiceServer) BlockUser(context.Context, *ID) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
+}
 func (UnimplementedUserServiceServer) AddAddress(context.Context, *Address) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddAddress not implemented")
 }
@@ -223,8 +370,41 @@ func (UnimplementedUserServiceServer) RemoveAddress(context.Context, *IDs) (*Res
 func (UnimplementedUserServiceServer) BeASeller(context.Context, *ID) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BeASeller not implemented")
 }
-func (UnimplementedUserServiceServer) AddProduct(context.Context, *SellerProdcut) (*Response, error) {
+func (UnimplementedUserServiceServer) AddProduct(context.Context, *UserProduct) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddProduct not implemented")
+}
+func (UnimplementedUserServiceServer) EditProductUser(context.Context, *UserProduct) (*UserProduct, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditProductUser not implemented")
+}
+func (UnimplementedUserServiceServer) RemoveProductUser(context.Context, *IDs) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveProductUser not implemented")
+}
+func (UnimplementedUserServiceServer) FindProductByIDUser(context.Context, *ID) (*UserProduct, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindProductByIDUser not implemented")
+}
+func (UnimplementedUserServiceServer) FindProductByCategoryUser(context.Context, *ID) (*UserProductList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindProductByCategoryUser not implemented")
+}
+func (UnimplementedUserServiceServer) FindAllProductsUser(context.Context, *NoParam) (*UserProductList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindAllProductsUser not implemented")
+}
+func (UnimplementedUserServiceServer) FindCategory(context.Context, *ID) (*UserCategory, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindCategory not implemented")
+}
+func (UnimplementedUserServiceServer) FindCategories(context.Context, *NoParam) (*UserCategoryList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindCategories not implemented")
+}
+func (UnimplementedUserServiceServer) AddToWatchlist(context.Context, *IDs) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddToWatchlist not implemented")
+}
+func (UnimplementedUserServiceServer) ViewWatchlist(context.Context, *ID) (*UserCategoryList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ViewWatchlist not implemented")
+}
+func (UnimplementedUserServiceServer) AddBid(context.Context, *UserBid) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddBid not implemented")
+}
+func (UnimplementedUserServiceServer) GetBids(context.Context, *ID) (*UserBidList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBids not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -347,6 +527,24 @@ func _UserService_ChangePassword_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_BlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).BlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_BlockUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).BlockUser(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_AddAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Address)
 	if err := dec(in); err != nil {
@@ -438,7 +636,7 @@ func _UserService_BeASeller_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _UserService_AddProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SellerProdcut)
+	in := new(UserProduct)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -450,7 +648,205 @@ func _UserService_AddProduct_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: UserService_AddProduct_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).AddProduct(ctx, req.(*SellerProdcut))
+		return srv.(UserServiceServer).AddProduct(ctx, req.(*UserProduct))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_EditProductUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserProduct)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).EditProductUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_EditProductUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).EditProductUser(ctx, req.(*UserProduct))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RemoveProductUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IDs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RemoveProductUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_RemoveProductUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RemoveProductUser(ctx, req.(*IDs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_FindProductByIDUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindProductByIDUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindProductByIDUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindProductByIDUser(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_FindProductByCategoryUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindProductByCategoryUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindProductByCategoryUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindProductByCategoryUser(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_FindAllProductsUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindAllProductsUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindAllProductsUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindAllProductsUser(ctx, req.(*NoParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_FindCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindCategory(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_FindCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindCategories_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindCategories(ctx, req.(*NoParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_AddToWatchlist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IDs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddToWatchlist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_AddToWatchlist_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddToWatchlist(ctx, req.(*IDs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ViewWatchlist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ViewWatchlist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ViewWatchlist_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ViewWatchlist(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_AddBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserBid)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddBid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_AddBid_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddBid(ctx, req.(*UserBid))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetBids_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetBids(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetBids_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetBids(ctx, req.(*ID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -487,6 +883,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_ChangePassword_Handler,
 		},
 		{
+			MethodName: "BlockUser",
+			Handler:    _UserService_BlockUser_Handler,
+		},
+		{
 			MethodName: "AddAddress",
 			Handler:    _UserService_AddAddress_Handler,
 		},
@@ -509,6 +909,50 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddProduct",
 			Handler:    _UserService_AddProduct_Handler,
+		},
+		{
+			MethodName: "EditProductUser",
+			Handler:    _UserService_EditProductUser_Handler,
+		},
+		{
+			MethodName: "RemoveProductUser",
+			Handler:    _UserService_RemoveProductUser_Handler,
+		},
+		{
+			MethodName: "FindProductByIDUser",
+			Handler:    _UserService_FindProductByIDUser_Handler,
+		},
+		{
+			MethodName: "FindProductByCategoryUser",
+			Handler:    _UserService_FindProductByCategoryUser_Handler,
+		},
+		{
+			MethodName: "FindAllProductsUser",
+			Handler:    _UserService_FindAllProductsUser_Handler,
+		},
+		{
+			MethodName: "FindCategory",
+			Handler:    _UserService_FindCategory_Handler,
+		},
+		{
+			MethodName: "FindCategories",
+			Handler:    _UserService_FindCategories_Handler,
+		},
+		{
+			MethodName: "AddToWatchlist",
+			Handler:    _UserService_AddToWatchlist_Handler,
+		},
+		{
+			MethodName: "ViewWatchlist",
+			Handler:    _UserService_ViewWatchlist_Handler,
+		},
+		{
+			MethodName: "AddBid",
+			Handler:    _UserService_AddBid_Handler,
+		},
+		{
+			MethodName: "GetBids",
+			Handler:    _UserService_GetBids_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

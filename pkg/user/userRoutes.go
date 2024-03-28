@@ -9,12 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
+// User represents the User route handler, containing configuration and gRPC client.
 type User struct {
 	cfg *config.Config
 	client pb.UserServiceClient
 }
 
+// NewUserRoute initializes the user routes and handlers.
 func NewUserRoute(c *gin.Engine, cfg config.Config) {
 	client, err := ClientDial(cfg)
 	if err != nil {
@@ -48,5 +49,19 @@ func NewUserRoute(c *gin.Engine, cfg config.Config) {
 
 		auth.POST("/seller", userHandler.BeASeller)
 		auth.POST("/product",userHandler.AddProduct)
+		auth.PATCH("/product/:id",userHandler.EditProduct)
+		auth.DELETE("/product/:id",userHandler.RemoveProduct)
+
+		auth.GET("/product/:id",userHandler.FindProduct)
+		auth.GET("/products",userHandler.FindAllProducts)
+		auth.GET("/category/product/:id",userHandler.FindProductsByCategory)
+		auth.GET("/category/:id",userHandler.FindCategory)
+		auth.GET("/categories",userHandler.FindAllCategories)
+
+		auth.POST("/watchlist/:id",userHandler.AddToWatchlist)
+		auth.GET("/watchlist",userHandler.ViewWatchlist)
+
+		auth.POST("/bid",userHandler.AddBid)
+		auth.GET("/bids/:id",userHandler.GetBids)
 	}
 }

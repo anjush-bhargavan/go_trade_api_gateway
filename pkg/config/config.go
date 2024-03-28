@@ -2,12 +2,15 @@ package config
 
 import "github.com/spf13/viper"
 
+// Config represents the environment variables.
 type Config struct {
 	APIPORT   string `mapstructure:"APIPORT"`
 	SECRETKEY string `mapstructure:"JWTKEY"`
 	USERPORT  string `mapstructure:"USERPORT"`
+	ADMINPORT string `mapstructure:"ADMINPORT"`
 }
 
+// LoadConfig will load the environment variable to access.
 func LoadConfig() (*Config, error) {
 	var config Config
 	viper.SetConfigFile(".env")

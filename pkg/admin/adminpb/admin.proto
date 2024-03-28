@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "./";
+
+service AdminService {
+    rpc AdminLoginRequest(AdminLogin) returns(AdminResponse);
+
+    rpc AddCategory(AdminCategory) returns(AdminResponse);
+    rpc FindCategory(AdID) returns(AdminCategory);
+    rpc FindCategories(AdminNoParam) returns (AdminCategoryList);
+    rpc EditCategoryAdmin(AdminCategory) returns (AdminCategory);
+    rpc RemoveCategoryAdmin(AdID) returns(AdminResponse);
+
+    rpc FindProductByID(AdID) returns(AdminProduct);
+    rpc FindAllProducts(AdminNoParam) returns (AdminProductList);
+    rpc RemoveProduct(AdID) returns(AdminResponse);
+
+    rpc AdminBlockUser(AdID) returns(AdminResponse);
+}
+
+message AdminProductList {
+    repeated AdminProduct Products = 1;
+}
+
+message AdminProduct {
+    string Name = 1;
+    uint32 Seller_ID = 2;
+    AdminCategory Category = 3;
+    uint32 Base_Price = 4;
+    string Description = 5;
+    bool   Bidding_Type = 6;
+    string Bidding_Start_Time = 7;
+    string Bidding_End_Time = 8;
+    string Listed_On = 9;
+    uint32 Product_ID = 10;
+    string Status = 11;
+    
+}
+
+
+message AdminNoParam{}
+ 
+message AdID {
+    uint32 ID = 1;
+}
+
+message AdminCategoryList {
+    repeated AdminCategory Categories = 1;
+}
+
+message AdminCategory {
+    uint32 Category_ID = 1;
+    string Name = 2;
+    string Description = 3;
+}
+
+
+message AdminLogin {
+    string Email = 1;
+    string Password = 2;
+}
+
+message AdminResponse {
+    enum Status {
+        OK = 0;
+        ERROR = 1;
+    }
+
+    Status status = 1;
+    string message = 2;
+    oneof payload {
+        string error = 3;
+        string data = 4;
+    }
+}

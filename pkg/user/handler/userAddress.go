@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AddAddressHandler handles the request for adding address of user
 func AddAddressHandler(c *gin.Context, client pb.UserServiceClient) {
 	timeout := time.Second * 1000
 	ctx, cancel := context.WithTimeout(c, timeout)
@@ -64,6 +65,7 @@ func AddAddressHandler(c *gin.Context, client pb.UserServiceClient) {
 	})
 }
 
+// EditAddressHandler handles the request for editing address of user
 func EditAddressHandler(c *gin.Context, client pb.UserServiceClient) {
 	timeout := time.Second * 1000
 	ctx, cancel := context.WithTimeout(c, timeout)
@@ -127,6 +129,7 @@ func EditAddressHandler(c *gin.Context, client pb.UserServiceClient) {
 	})
 }
 
+// RemoveAddressHandler handles the request for removing address of user
 func RemoveAddressHandler(c *gin.Context, client pb.UserServiceClient) {
 	timeout := time.Second * 1000
 	ctx, cancel := context.WithTimeout(c, timeout)
@@ -157,8 +160,8 @@ func RemoveAddressHandler(c *gin.Context, client pb.UserServiceClient) {
 		return
 	}
 
-	response, err := client.RemoveAddress(ctx,&pb.IDs{
-		ID: uint32(addressID),
+	response, err := client.RemoveAddress(ctx, &pb.IDs{
+		ID:      uint32(addressID),
 		User_ID: uint32(userID),
 	})
 

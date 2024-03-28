@@ -2,21 +2,21 @@ package server
 
 import "github.com/gin-gonic/gin"
 
-// SeverStruct represent the model of server it will have gin engine
-type ServerStruct struct {
-	R *gin.Engine
+// Server represents the model of the server with a Gin engine.
+type Server struct {
+	R *gin.Engine 
 }
 
-// StartServer method starts the server in the specified port
-func (s *ServerStruct) StartServer(port string) {
+// StartServer method starts the server on the specified port.
+func (s *Server) StartServer(port string) {
 	s.R.Run(":" + port)
 }
 
-// Sever method will return the SeverStruct instance with default gin engine attached
-func Server() *ServerStruct {
+// NewServer returns a new Server instance with the default Gin engine attached.
+func NewServer() *Server {
 	engine := gin.Default()
 
-	return &ServerStruct{
+	return &Server{
 		R: engine,
 	}
 }
