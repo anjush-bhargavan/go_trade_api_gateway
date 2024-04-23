@@ -6,6 +6,7 @@ import (
 	"github.com/anjush-bhargavan/go_trade_api_gateway/middleware"
 	"github.com/anjush-bhargavan/go_trade_api_gateway/pkg/config"
 	pb "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/user/userpb"
+	chatpb "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/chat/pb"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,6 +14,7 @@ import (
 type User struct {
 	cfg *config.Config
 	client pb.UserServiceClient
+	chatClient chatpb.ChatServiceClient
 }
 
 // NewUserRoute initializes the user routes and handlers.
@@ -47,7 +49,7 @@ func NewUserRoute(c *gin.Engine, cfg config.Config) {
 		auth.PATCH("/profile",userHandler.EditProfile)
 		auth.PATCH("/password",userHandler.ChangePassword)
 
-		auth.POST("/seller", userHandler.BeASeller)
+		// auth.POST("/seller", userHandler.BeASeller)
 		auth.POST("/product",userHandler.AddProduct)
 		auth.PATCH("/product/:id",userHandler.EditProduct)
 		auth.DELETE("/product/:id",userHandler.RemoveProduct)
@@ -63,5 +65,9 @@ func NewUserRoute(c *gin.Engine, cfg config.Config) {
 
 		auth.POST("/bid",userHandler.AddBid)
 		auth.GET("/bids/:id",userHandler.GetBids)
+
+		user.GET("/payment",userHandler.Payment)
+		user.GET("/payment/success",userHandler.PaymentSuccess)
+		user.GET("/success",userHandler.SuccessPage)
 	}
 }

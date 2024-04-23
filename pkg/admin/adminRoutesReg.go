@@ -55,3 +55,20 @@ func (a *Admin) FindProducts(ctx *gin.Context) {
 func (a *Admin) BlockUser(ctx *gin.Context) {
 	handler.BlockUserHandler(ctx, a.Client)
 }
+
+// OrderHistory handles the admin to find all orders request.
+func (a *Admin) OrderHistory(ctx *gin.Context) {
+	handler.OrderHistoryHandler(ctx, a.Client)
+}
+
+
+// UserOrders handles the admin to find all orders of a user request.
+func (a *Admin) UserOrders(ctx *gin.Context) {
+	handler.UserOrdersHandler(ctx, a.Client)
+}
+
+
+// FindOrder handles the admin to find order request.
+func (a *Admin) FindOrder(ctx *gin.Context) {
+	handler.OrderHandler(ctx, a.Client)
+}

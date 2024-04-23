@@ -6,6 +6,7 @@ option go_package = "./";
 
 service AdminService {
     rpc AdminLoginRequest(AdminLogin) returns(AdminResponse);
+    rpc AddToAdminWallet(Amount) returns(AdminResponse);
 
     rpc AddCategory(AdminCategory) returns(AdminResponse);
     rpc FindCategory(AdID) returns(AdminCategory);
@@ -18,6 +19,27 @@ service AdminService {
     rpc RemoveProduct(AdID) returns(AdminResponse);
 
     rpc AdminBlockUser(AdID) returns(AdminResponse);
+
+    rpc FetchOrders(AdminNoParam) returns (AdminOrderList);
+    rpc FetchOrderByUser(AdID) returns (AdminOrderList);
+    rpc FetchOrder(AdID) returns (AdminOrder);
+}
+
+message AdminOrderList {
+    repeated AdminOrder Orders = 1;
+}
+
+message AdminOrder {
+    uint32 Order_ID = 1;
+    uint32 User_ID = 2;
+    uint32 Seller_ID = 3;
+    uint32 Product_ID = 4;
+    float Amount = 5;
+    string Payment_ID = 6;
+}
+
+message Amount {
+    float amount = 1;
 }
 
 message AdminProductList {

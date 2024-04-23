@@ -49,5 +49,9 @@ func NewAdminRoute(c *gin.Engine, cfg config.Config) {
 		auth.GET("/products",adminHandler.FindProducts)
 
 		auth.PATCH("/user/:id",adminHandler.BlockUser)
+
+		auth.GET("/orders",adminHandler.OrderHistory)
+		auth.GET("/orders/:id",adminHandler.UserOrders)
+		auth.GET("/order/:id",adminHandler.FindOrder)
 	}
 }

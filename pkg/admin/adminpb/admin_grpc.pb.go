@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	AdminService_AdminLoginRequest_FullMethodName   = "/pb.AdminService/AdminLoginRequest"
+	AdminService_AddToAdminWallet_FullMethodName    = "/pb.AdminService/AddToAdminWallet"
 	AdminService_AddCategory_FullMethodName         = "/pb.AdminService/AddCategory"
 	AdminService_FindCategory_FullMethodName        = "/pb.AdminService/FindCategory"
 	AdminService_FindCategories_FullMethodName      = "/pb.AdminService/FindCategories"
@@ -29,6 +30,9 @@ const (
 	AdminService_FindAllProducts_FullMethodName     = "/pb.AdminService/FindAllProducts"
 	AdminService_RemoveProduct_FullMethodName       = "/pb.AdminService/RemoveProduct"
 	AdminService_AdminBlockUser_FullMethodName      = "/pb.AdminService/AdminBlockUser"
+	AdminService_FetchOrders_FullMethodName         = "/pb.AdminService/FetchOrders"
+	AdminService_FetchOrderByUser_FullMethodName    = "/pb.AdminService/FetchOrderByUser"
+	AdminService_FetchOrder_FullMethodName          = "/pb.AdminService/FetchOrder"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -36,6 +40,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AdminServiceClient interface {
 	AdminLoginRequest(ctx context.Context, in *AdminLogin, opts ...grpc.CallOption) (*AdminResponse, error)
+	AddToAdminWallet(ctx context.Context, in *Amount, opts ...grpc.CallOption) (*AdminResponse, error)
 	AddCategory(ctx context.Context, in *AdminCategory, opts ...grpc.CallOption) (*AdminResponse, error)
 	FindCategory(ctx context.Context, in *AdID, opts ...grpc.CallOption) (*AdminCategory, error)
 	FindCategories(ctx context.Context, in *AdminNoParam, opts ...grpc.CallOption) (*AdminCategoryList, error)
@@ -45,6 +50,9 @@ type AdminServiceClient interface {
 	FindAllProducts(ctx context.Context, in *AdminNoParam, opts ...grpc.CallOption) (*AdminProductList, error)
 	RemoveProduct(ctx context.Context, in *AdID, opts ...grpc.CallOption) (*AdminResponse, error)
 	AdminBlockUser(ctx context.Context, in *AdID, opts ...grpc.CallOption) (*AdminResponse, error)
+	FetchOrders(ctx context.Context, in *AdminNoParam, opts ...grpc.CallOption) (*AdminOrderList, error)
+	FetchOrderByUser(ctx context.Context, in *AdID, opts ...grpc.CallOption) (*AdminOrderList, error)
+	FetchOrder(ctx context.Context, in *AdID, opts ...grpc.CallOption) (*AdminOrder, error)
 }
 
 type adminServiceClient struct {
@@ -58,6 +66,15 @@ func NewAdminServiceClient(cc grpc.ClientConnInterface) AdminServiceClient {
 func (c *adminServiceClient) AdminLoginRequest(ctx context.Context, in *AdminLogin, opts ...grpc.CallOption) (*AdminResponse, error) {
 	out := new(AdminResponse)
 	err := c.cc.Invoke(ctx, AdminService_AdminLoginRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) AddToAdminWallet(ctx context.Context, in *Amount, opts ...grpc.CallOption) (*AdminResponse, error) {
+	out := new(AdminResponse)
+	err := c.cc.Invoke(ctx, AdminService_AddToAdminWallet_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -145,11 +162,39 @@ func (c *adminServiceClient) AdminBlockUser(ctx context.Context, in *AdID, opts 
 	return out, nil
 }
 
+func (c *adminServiceClient) FetchOrders(ctx context.Context, in *AdminNoParam, opts ...grpc.CallOption) (*AdminOrderList, error) {
+	out := new(AdminOrderList)
+	err := c.cc.Invoke(ctx, AdminService_FetchOrders_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) FetchOrderByUser(ctx context.Context, in *AdID, opts ...grpc.CallOption) (*AdminOrderList, error) {
+	out := new(AdminOrderList)
+	err := c.cc.Invoke(ctx, AdminService_FetchOrderByUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) FetchOrder(ctx context.Context, in *AdID, opts ...grpc.CallOption) (*AdminOrder, error) {
+	out := new(AdminOrder)
+	err := c.cc.Invoke(ctx, AdminService_FetchOrder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility
 type AdminServiceServer interface {
 	AdminLoginRequest(context.Context, *AdminLogin) (*AdminResponse, error)
+	AddToAdminWallet(context.Context, *Amount) (*AdminResponse, error)
 	AddCategory(context.Context, *AdminCategory) (*AdminResponse, error)
 	FindCategory(context.Context, *AdID) (*AdminCategory, error)
 	FindCategories(context.Context, *AdminNoParam) (*AdminCategoryList, error)
@@ -159,6 +204,9 @@ type AdminServiceServer interface {
 	FindAllProducts(context.Context, *AdminNoParam) (*AdminProductList, error)
 	RemoveProduct(context.Context, *AdID) (*AdminResponse, error)
 	AdminBlockUser(context.Context, *AdID) (*AdminResponse, error)
+	FetchOrders(context.Context, *AdminNoParam) (*AdminOrderList, error)
+	FetchOrderByUser(context.Context, *AdID) (*AdminOrderList, error)
+	FetchOrder(context.Context, *AdID) (*AdminOrder, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -168,6 +216,9 @@ type UnimplementedAdminServiceServer struct {
 
 func (UnimplementedAdminServiceServer) AdminLoginRequest(context.Context, *AdminLogin) (*AdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminLoginRequest not implemented")
+}
+func (UnimplementedAdminServiceServer) AddToAdminWallet(context.Context, *Amount) (*AdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddToAdminWallet not implemented")
 }
 func (UnimplementedAdminServiceServer) AddCategory(context.Context, *AdminCategory) (*AdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCategory not implemented")
@@ -196,6 +247,15 @@ func (UnimplementedAdminServiceServer) RemoveProduct(context.Context, *AdID) (*A
 func (UnimplementedAdminServiceServer) AdminBlockUser(context.Context, *AdID) (*AdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminBlockUser not implemented")
 }
+func (UnimplementedAdminServiceServer) FetchOrders(context.Context, *AdminNoParam) (*AdminOrderList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchOrders not implemented")
+}
+func (UnimplementedAdminServiceServer) FetchOrderByUser(context.Context, *AdID) (*AdminOrderList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchOrderByUser not implemented")
+}
+func (UnimplementedAdminServiceServer) FetchOrder(context.Context, *AdID) (*AdminOrder, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchOrder not implemented")
+}
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 
 // UnsafeAdminServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -223,6 +283,24 @@ func _AdminService_AdminLoginRequest_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AdminServiceServer).AdminLoginRequest(ctx, req.(*AdminLogin))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_AddToAdminWallet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Amount)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).AddToAdminWallet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_AddToAdminWallet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).AddToAdminWallet(ctx, req.(*Amount))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -389,6 +467,60 @@ func _AdminService_AdminBlockUser_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_FetchOrders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdminNoParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).FetchOrders(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_FetchOrders_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).FetchOrders(ctx, req.(*AdminNoParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_FetchOrderByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).FetchOrderByUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_FetchOrderByUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).FetchOrderByUser(ctx, req.(*AdID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_FetchOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).FetchOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_FetchOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).FetchOrder(ctx, req.(*AdID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -399,6 +531,10 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AdminLoginRequest",
 			Handler:    _AdminService_AdminLoginRequest_Handler,
+		},
+		{
+			MethodName: "AddToAdminWallet",
+			Handler:    _AdminService_AddToAdminWallet_Handler,
 		},
 		{
 			MethodName: "AddCategory",
@@ -435,6 +571,18 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AdminBlockUser",
 			Handler:    _AdminService_AdminBlockUser_Handler,
+		},
+		{
+			MethodName: "FetchOrders",
+			Handler:    _AdminService_FetchOrders_Handler,
+		},
+		{
+			MethodName: "FetchOrderByUser",
+			Handler:    _AdminService_FetchOrderByUser_Handler,
+		},
+		{
+			MethodName: "FetchOrder",
+			Handler:    _AdminService_FetchOrder_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

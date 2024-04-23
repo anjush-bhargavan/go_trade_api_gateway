@@ -30,7 +30,6 @@ const (
 	UserService_ViewAllAddress_FullMethodName            = "/pb.UserService/ViewAllAddress"
 	UserService_EditAddress_FullMethodName               = "/pb.UserService/EditAddress"
 	UserService_RemoveAddress_FullMethodName             = "/pb.UserService/RemoveAddress"
-	UserService_BeASeller_FullMethodName                 = "/pb.UserService/BeASeller"
 	UserService_AddProduct_FullMethodName                = "/pb.UserService/AddProduct"
 	UserService_EditProductUser_FullMethodName           = "/pb.UserService/EditProductUser"
 	UserService_RemoveProductUser_FullMethodName         = "/pb.UserService/RemoveProductUser"
@@ -41,8 +40,14 @@ const (
 	UserService_FindCategories_FullMethodName            = "/pb.UserService/FindCategories"
 	UserService_AddToWatchlist_FullMethodName            = "/pb.UserService/AddToWatchlist"
 	UserService_ViewWatchlist_FullMethodName             = "/pb.UserService/ViewWatchlist"
+	UserService_ViewWatchlistUsers_FullMethodName        = "/pb.UserService/ViewWatchlistUsers"
 	UserService_AddBid_FullMethodName                    = "/pb.UserService/AddBid"
 	UserService_GetBids_FullMethodName                   = "/pb.UserService/GetBids"
+	UserService_CreateTransaction_FullMethodName         = "/pb.UserService/CreateTransaction"
+	UserService_FindTransactionByUser_FullMethodName     = "/pb.UserService/FindTransactionByUser"
+	UserService_FindAllTransactions_FullMethodName       = "/pb.UserService/FindAllTransactions"
+	UserService_UserCreatePayment_FullMethodName         = "/pb.UserService/UserCreatePayment"
+	UserService_UserPaymentSuccess_FullMethodName        = "/pb.UserService/UserPaymentSuccess"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -60,7 +65,6 @@ type UserServiceClient interface {
 	ViewAllAddress(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*AddressList, error)
 	EditAddress(ctx context.Context, in *Address, opts ...grpc.CallOption) (*Address, error)
 	RemoveAddress(ctx context.Context, in *IDs, opts ...grpc.CallOption) (*Response, error)
-	BeASeller(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Response, error)
 	AddProduct(ctx context.Context, in *UserProduct, opts ...grpc.CallOption) (*Response, error)
 	EditProductUser(ctx context.Context, in *UserProduct, opts ...grpc.CallOption) (*UserProduct, error)
 	RemoveProductUser(ctx context.Context, in *IDs, opts ...grpc.CallOption) (*Response, error)
@@ -71,8 +75,14 @@ type UserServiceClient interface {
 	FindCategories(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*UserCategoryList, error)
 	AddToWatchlist(ctx context.Context, in *IDs, opts ...grpc.CallOption) (*Response, error)
 	ViewWatchlist(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserCategoryList, error)
+	ViewWatchlistUsers(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserList, error)
 	AddBid(ctx context.Context, in *UserBid, opts ...grpc.CallOption) (*Response, error)
 	GetBids(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserBidList, error)
+	CreateTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*Response, error)
+	FindTransactionByUser(ctx context.Context, in *ID, opts ...grpc.CallOption) (*TransactionList, error)
+	FindAllTransactions(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*TransactionList, error)
+	UserCreatePayment(ctx context.Context, in *UserBid, opts ...grpc.CallOption) (*UserPaymentResponse, error)
+	UserPaymentSuccess(ctx context.Context, in *UserPayment, opts ...grpc.CallOption) (*Response, error)
 }
 
 type userServiceClient struct {
@@ -182,15 +192,6 @@ func (c *userServiceClient) RemoveAddress(ctx context.Context, in *IDs, opts ...
 	return out, nil
 }
 
-func (c *userServiceClient) BeASeller(ctx context.Context, in *ID, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
-	err := c.cc.Invoke(ctx, UserService_BeASeller_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userServiceClient) AddProduct(ctx context.Context, in *UserProduct, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, UserService_AddProduct_FullMethodName, in, out, opts...)
@@ -281,6 +282,15 @@ func (c *userServiceClient) ViewWatchlist(ctx context.Context, in *ID, opts ...g
 	return out, nil
 }
 
+func (c *userServiceClient) ViewWatchlistUsers(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserList, error) {
+	out := new(UserList)
+	err := c.cc.Invoke(ctx, UserService_ViewWatchlistUsers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) AddBid(ctx context.Context, in *UserBid, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, UserService_AddBid_FullMethodName, in, out, opts...)
@@ -293,6 +303,51 @@ func (c *userServiceClient) AddBid(ctx context.Context, in *UserBid, opts ...grp
 func (c *userServiceClient) GetBids(ctx context.Context, in *ID, opts ...grpc.CallOption) (*UserBidList, error) {
 	out := new(UserBidList)
 	err := c.cc.Invoke(ctx, UserService_GetBids_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, UserService_CreateTransaction_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) FindTransactionByUser(ctx context.Context, in *ID, opts ...grpc.CallOption) (*TransactionList, error) {
+	out := new(TransactionList)
+	err := c.cc.Invoke(ctx, UserService_FindTransactionByUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) FindAllTransactions(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*TransactionList, error) {
+	out := new(TransactionList)
+	err := c.cc.Invoke(ctx, UserService_FindAllTransactions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UserCreatePayment(ctx context.Context, in *UserBid, opts ...grpc.CallOption) (*UserPaymentResponse, error) {
+	out := new(UserPaymentResponse)
+	err := c.cc.Invoke(ctx, UserService_UserCreatePayment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UserPaymentSuccess(ctx context.Context, in *UserPayment, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, UserService_UserPaymentSuccess_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -314,7 +369,6 @@ type UserServiceServer interface {
 	ViewAllAddress(context.Context, *NoParam) (*AddressList, error)
 	EditAddress(context.Context, *Address) (*Address, error)
 	RemoveAddress(context.Context, *IDs) (*Response, error)
-	BeASeller(context.Context, *ID) (*Response, error)
 	AddProduct(context.Context, *UserProduct) (*Response, error)
 	EditProductUser(context.Context, *UserProduct) (*UserProduct, error)
 	RemoveProductUser(context.Context, *IDs) (*Response, error)
@@ -325,8 +379,14 @@ type UserServiceServer interface {
 	FindCategories(context.Context, *NoParam) (*UserCategoryList, error)
 	AddToWatchlist(context.Context, *IDs) (*Response, error)
 	ViewWatchlist(context.Context, *ID) (*UserCategoryList, error)
+	ViewWatchlistUsers(context.Context, *ID) (*UserList, error)
 	AddBid(context.Context, *UserBid) (*Response, error)
 	GetBids(context.Context, *ID) (*UserBidList, error)
+	CreateTransaction(context.Context, *Transaction) (*Response, error)
+	FindTransactionByUser(context.Context, *ID) (*TransactionList, error)
+	FindAllTransactions(context.Context, *NoParam) (*TransactionList, error)
+	UserCreatePayment(context.Context, *UserBid) (*UserPaymentResponse, error)
+	UserPaymentSuccess(context.Context, *UserPayment) (*Response, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -367,9 +427,6 @@ func (UnimplementedUserServiceServer) EditAddress(context.Context, *Address) (*A
 func (UnimplementedUserServiceServer) RemoveAddress(context.Context, *IDs) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveAddress not implemented")
 }
-func (UnimplementedUserServiceServer) BeASeller(context.Context, *ID) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BeASeller not implemented")
-}
 func (UnimplementedUserServiceServer) AddProduct(context.Context, *UserProduct) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddProduct not implemented")
 }
@@ -400,11 +457,29 @@ func (UnimplementedUserServiceServer) AddToWatchlist(context.Context, *IDs) (*Re
 func (UnimplementedUserServiceServer) ViewWatchlist(context.Context, *ID) (*UserCategoryList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ViewWatchlist not implemented")
 }
+func (UnimplementedUserServiceServer) ViewWatchlistUsers(context.Context, *ID) (*UserList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ViewWatchlistUsers not implemented")
+}
 func (UnimplementedUserServiceServer) AddBid(context.Context, *UserBid) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddBid not implemented")
 }
 func (UnimplementedUserServiceServer) GetBids(context.Context, *ID) (*UserBidList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBids not implemented")
+}
+func (UnimplementedUserServiceServer) CreateTransaction(context.Context, *Transaction) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTransaction not implemented")
+}
+func (UnimplementedUserServiceServer) FindTransactionByUser(context.Context, *ID) (*TransactionList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindTransactionByUser not implemented")
+}
+func (UnimplementedUserServiceServer) FindAllTransactions(context.Context, *NoParam) (*TransactionList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindAllTransactions not implemented")
+}
+func (UnimplementedUserServiceServer) UserCreatePayment(context.Context, *UserBid) (*UserPaymentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserCreatePayment not implemented")
+}
+func (UnimplementedUserServiceServer) UserPaymentSuccess(context.Context, *UserPayment) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserPaymentSuccess not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -617,24 +692,6 @@ func _UserService_RemoveAddress_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_BeASeller_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ID)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).BeASeller(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_BeASeller_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).BeASeller(ctx, req.(*ID))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserService_AddProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserProduct)
 	if err := dec(in); err != nil {
@@ -815,6 +872,24 @@ func _UserService_ViewWatchlist_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ViewWatchlistUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ViewWatchlistUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ViewWatchlistUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ViewWatchlistUsers(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_AddBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserBid)
 	if err := dec(in); err != nil {
@@ -847,6 +922,96 @@ func _UserService_GetBids_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetBids(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Transaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateTransaction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateTransaction(ctx, req.(*Transaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_FindTransactionByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindTransactionByUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindTransactionByUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindTransactionByUser(ctx, req.(*ID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_FindAllTransactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindAllTransactions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindAllTransactions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindAllTransactions(ctx, req.(*NoParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UserCreatePayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserBid)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserCreatePayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserCreatePayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserCreatePayment(ctx, req.(*UserBid))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UserPaymentSuccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserPayment)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserPaymentSuccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserPaymentSuccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserPaymentSuccess(ctx, req.(*UserPayment))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -903,10 +1068,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_RemoveAddress_Handler,
 		},
 		{
-			MethodName: "BeASeller",
-			Handler:    _UserService_BeASeller_Handler,
-		},
-		{
 			MethodName: "AddProduct",
 			Handler:    _UserService_AddProduct_Handler,
 		},
@@ -947,12 +1108,36 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_ViewWatchlist_Handler,
 		},
 		{
+			MethodName: "ViewWatchlistUsers",
+			Handler:    _UserService_ViewWatchlistUsers_Handler,
+		},
+		{
 			MethodName: "AddBid",
 			Handler:    _UserService_AddBid_Handler,
 		},
 		{
 			MethodName: "GetBids",
 			Handler:    _UserService_GetBids_Handler,
+		},
+		{
+			MethodName: "CreateTransaction",
+			Handler:    _UserService_CreateTransaction_Handler,
+		},
+		{
+			MethodName: "FindTransactionByUser",
+			Handler:    _UserService_FindTransactionByUser_Handler,
+		},
+		{
+			MethodName: "FindAllTransactions",
+			Handler:    _UserService_FindAllTransactions_Handler,
+		},
+		{
+			MethodName: "UserCreatePayment",
+			Handler:    _UserService_UserCreatePayment_Handler,
+		},
+		{
+			MethodName: "UserPaymentSuccess",
+			Handler:    _UserService_UserPaymentSuccess_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

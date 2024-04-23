@@ -8,6 +8,8 @@ type Config struct {
 	SECRETKEY string `mapstructure:"JWTKEY"`
 	USERPORT  string `mapstructure:"USERPORT"`
 	ADMINPORT string `mapstructure:"ADMINPORT"`
+	CHATPORT  string `mapstructure:"CHATPORT"`
+	RAZORPAY  string `mapstructure:"RAZORPAY"`
 }
 
 // LoadConfig will load the environment variable to access.

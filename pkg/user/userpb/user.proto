@@ -20,7 +20,7 @@ service UserService {
     rpc RemoveAddress(IDs) returns(Response);
     
 
-    rpc BeASeller(ID) returns (Response) ;
+    // rpc BeASeller(ID) returns (Response) ;
 
     rpc AddProduct(UserProduct) returns (Response);
     rpc EditProductUser(UserProduct) returns (UserProduct);
@@ -34,11 +34,44 @@ service UserService {
 
     rpc AddToWatchlist(IDs) returns(Response);
     rpc ViewWatchlist(ID) returns(UserCategoryList);
+    rpc ViewWatchlistUsers(ID) returns(UserList);
     
     rpc AddBid(UserBid) returns (Response);
     rpc GetBids(ID) returns(UserBidList);
+
+    rpc CreateTransaction(Transaction) returns (Response);
+    rpc FindTransactionByUser(ID) returns (TransactionList);
+    rpc FindAllTransactions(NoParam) returns(TransactionList);
+
+    rpc UserCreatePayment(UserBid) returns(UserPaymentResponse);
+    rpc UserPaymentSuccess(UserPayment) returns(Response);
+}
+message UserPaymentResponse {
+    uint32 Product_ID = 1;
+    string User_Name = 2;
+    string User_Email = 3;
+    float Amount = 4;
+    string Order_ID = 5;
 }
 
+message UserPayment {
+    uint32 User_ID = 1;
+    string Payment_ID = 2;
+    float Amount = 3;
+    uint32 Product_ID = 4;
+
+}
+
+message TransactionList {
+    repeated Transaction Transactions = 1;
+}
+
+message Transaction {
+    uint32 Transaction_ID = 1;
+    uint32 User_ID = 2;
+    string Name = 3;
+    float Amount = 4;
+}
 
 message NoParam {}
 
@@ -83,6 +116,10 @@ message IDs {
     uint32 User_ID = 2;
 }
 
+message UserList {
+    repeated Profile Users = 1;
+}
+
 message Profile {
     uint32 User_ID = 1;
     string User_Name = 2;
@@ -90,6 +127,8 @@ message Profile {
     string Mobile = 4;
     string Referral_Code = 5;
     float Wallet = 6;
+    bool Is_Blocked = 7;
+    uint32 Rejection_Count = 8;
 }
 
 message Address {
@@ -142,12 +181,16 @@ message UserCategory {
 }
 
 message UserBidList {
-    repeated UserBid Bids = 1;
+    uint32 Bid_ID = 1;
+    uint32 Product_ID = 2;
+    string Product_Name = 3;
+    uint32 Seller_ID = 4;
+    float Base_Price = 5;
+    repeated UserBid Bids = 6;
 }
 
 message UserBid {
-    uint32 Bid_ID = 1;
-    uint32 User_ID = 2;
-    uint32 Product_ID = 3;
-    float Amount = 4; 
+    uint32 User_ID = 1;
+    uint32 Product_ID = 2;
+    float Amount = 3; 
 }

@@ -11,46 +11,46 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// BeASellerHandler handles the user to register as a seller request.
-func BeASellerHandler(c *gin.Context, client pb.UserServiceClient) {
-	timeout := time.Second * 1000
-	ctx, cancel := context.WithTimeout(c, timeout)
-	defer cancel()
+// // BeASellerHandler handles the user to register as a seller request.
+// func BeASellerHandler(c *gin.Context, client pb.UserServiceClient) {
+// 	timeout := time.Second * 1000
+// 	ctx, cancel := context.WithTimeout(c, timeout)
+// 	defer cancel()
 
-	id, ok := c.Get("user_id")
-	if !ok {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
-			"Message": "error while user id from context",
-			"Error":   ""})
-		return
-	}
+// 	id, ok := c.Get("user_id")
+// 	if !ok {
+// 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
+// 			"Message": "error while user id from context",
+// 			"Error":   ""})
+// 		return
+// 	}
 
-	userID, ok := id.(uint)
-	if !ok {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
-			"Message": "error while user id converting",
-			"Error":   ""})
-		return
-	}
+// 	userID, ok := id.(uint)
+// 	if !ok {
+// 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
+// 			"Message": "error while user id converting",
+// 			"Error":   ""})
+// 		return
+// 	}
 
-	response, err := client.BeASeller(ctx, &pb.ID{
-		ID: uint32(userID),
-	})
+// 	response, err := client.BeASeller(ctx, &pb.ID{
+// 		ID: uint32(userID),
+// 	})
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
-			"Message": "error in client response",
-			"Data":    response,
-			"Error":   err.Error()})
-		return
-	}
+// 	if err != nil {
+// 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
+// 			"Message": "error in client response",
+// 			"Data":    response,
+// 			"Error":   err.Error()})
+// 		return
+// 	}
 
-	c.JSON(http.StatusAccepted, gin.H{
-		"Status":  http.StatusAccepted,
-		"Message": "seller created successfully",
-		"Data":    response,
-	})
-}
+// 	c.JSON(http.StatusAccepted, gin.H{
+// 		"Status":  http.StatusAccepted,
+// 		"Message": "seller created successfully",
+// 		"Data":    response,
+// 	})
+// }
 
 // AddProductHandler handles the seller to add  product request.
 func AddProductHandler(c *gin.Context, client pb.UserServiceClient) {

@@ -50,10 +50,10 @@ func (u *User) ChangePassword(ctx *gin.Context) {
 	handler.ChangePasswordHandler(ctx, u.client)
 }
 
-// BeASeller handles the request for the user to become a seller.
-func (u *User) BeASeller(ctx *gin.Context) {
-	handler.BeASellerHandler(ctx, u.client)
-}
+// // BeASeller handles the request for the user to become a seller.
+// func (u *User) BeASeller(ctx *gin.Context) {
+// 	handler.BeASellerHandler(ctx, u.client)
+// }
 
 // AddProduct handles the request to add a new product by the user.
 func (u *User) AddProduct(ctx *gin.Context) {
@@ -113,4 +113,17 @@ func (u *User) AddBid(ctx *gin.Context) {
 // GetBids handles the request the users to view  the bids on the product by the user.
 func (u *User) GetBids(ctx *gin.Context) {
 	handler.GetBidsHandler(ctx, u.client)
+}
+
+
+func (u *User) Payment(ctx *gin.Context) {
+	handler.UserPaymentHandler(ctx,u.client,u.cfg)
+}
+
+func (u *User) PaymentSuccess(ctx *gin.Context) {
+	handler.UserPaymentSuccessHandler(ctx,u.client)
+}
+
+func (u *User) SuccessPage(ctx *gin.Context) {
+	handler.SuccessPageHandler(ctx)
 }
