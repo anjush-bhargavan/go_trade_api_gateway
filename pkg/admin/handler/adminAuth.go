@@ -2,11 +2,11 @@ package handler
 
 import (
 	"context"
+	dto "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/DTO"
+	pb "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/admin/adminpb"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
-	pb "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/admin/adminpb"
-	dto "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/DTO"
-	"github.com/gin-gonic/gin"
 )
 
 // AdminLoginHandler function will send the login request to client.

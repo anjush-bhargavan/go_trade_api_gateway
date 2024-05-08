@@ -26,7 +26,7 @@ func AddCategoryHandler(c *gin.Context, client pb.AdminServiceClient) {
 	}
 
 	response, err := client.AddCategory(ctx, &pb.AdminCategory{
-		Name: category.Name,
+		Name:        category.Name,
 		Description: category.Description,
 	})
 	if err != nil {
@@ -68,7 +68,7 @@ func EditCategoryHandler(c *gin.Context, client pb.AdminServiceClient) {
 
 	response, err := client.EditCategoryAdmin(ctx, &pb.AdminCategory{
 		Category_ID: uint32(categoryID),
-		Name: category.Name,
+		Name:        category.Name,
 		Description: category.Description,
 	})
 	if err != nil {

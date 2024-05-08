@@ -1,13 +1,12 @@
 package handler
 
-
 import (
 	"context"
+	pb "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/admin/adminpb"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"time"
-	pb "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/admin/adminpb"
-	"github.com/gin-gonic/gin"
 )
 
 // OrderHistoryHandler function will find all orders request to client.
@@ -15,7 +14,6 @@ func OrderHistoryHandler(c *gin.Context, client pb.AdminServiceClient) {
 	timeout := time.Second * 1000
 	ctx, cancel := context.WithTimeout(c, timeout)
 	defer cancel()
-
 
 	response, err := client.FetchOrders(ctx, &pb.AdminNoParam{})
 	if err != nil {
@@ -39,7 +37,7 @@ func UserOrdersHandler(c *gin.Context, client pb.AdminServiceClient) {
 	defer cancel()
 
 	id := c.Param("id")
-	userID ,err := strconv.Atoi(id)
+	userID, err := strconv.Atoi(id)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
 			"Message": "error in converting id to int",
@@ -60,6 +58,7 @@ func UserOrdersHandler(c *gin.Context, client pb.AdminServiceClient) {
 		"Data":    response,
 	})
 }
+
 // OrderHandler function will send find the order request to client.
 func OrderHandler(c *gin.Context, client pb.AdminServiceClient) {
 	timeout := time.Second * 1000
@@ -67,7 +66,7 @@ func OrderHandler(c *gin.Context, client pb.AdminServiceClient) {
 	defer cancel()
 
 	id := c.Param("id")
-	orderID ,err := strconv.Atoi(id)
+	orderID, err := strconv.Atoi(id)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
 			"Message": "error in converting id to int",

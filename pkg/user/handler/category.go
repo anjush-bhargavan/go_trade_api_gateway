@@ -42,7 +42,6 @@ func UserFindCategoryHandler(c *gin.Context, client pb.UserServiceClient) {
 	})
 }
 
-
 // UserFindAllCategoryHandler function will send find all Category request to client.
 func UserFindAllCategoryHandler(c *gin.Context, client pb.UserServiceClient) {
 	timeout := time.Second * 1000

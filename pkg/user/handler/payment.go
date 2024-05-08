@@ -93,7 +93,7 @@ func UserPaymentSuccessHandler(c *gin.Context, client pb.UserServiceClient) {
 			"Error":   err.Error()})
 		return
 	}
-	fmt.Println(productID,productIDString)
+	fmt.Println(productID, productIDString)
 
 	_, err = client.UserPaymentSuccess(ctx, &pb.UserPayment{
 		User_ID:    uint32(userID),
@@ -113,7 +113,7 @@ func UserPaymentSuccessHandler(c *gin.Context, client pb.UserServiceClient) {
 		"status": true})
 }
 
-// SuccessPage renders the success page.
+// SuccessPageHandler renders the success page.
 func SuccessPageHandler(c *gin.Context) {
 	pID := c.Query("id")
 	userID := c.Query("user_id")

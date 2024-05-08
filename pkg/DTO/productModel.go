@@ -1,7 +1,6 @@
 package dto
 
-
-//Product represents the product data structure.
+// Product represents the product data structure.
 type Product struct {
 	Name             string `json:"name"`
 	Category         uint   `json:"category"`
@@ -14,8 +13,7 @@ type Product struct {
 	BiddingEndTime   string `json:"bidding_end_time"`
 }
 
-
-//Category represents the category data structure.
+// Category represents the category data structure.
 type Category struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`

@@ -7,10 +7,10 @@ import (
 
 // Chat handles the websocket connection in the chat page.
 func (c *Chat) Chat(ctx *gin.Context) {
-	handler.HandleWebSocketConnection(ctx, c.client,c.userClient)
+	handler.HandleWebSocketConnection(ctx, c.client, c.userClient)
 }
 
 // ChatPage handles to load the chat page
 func (c *Chat) ChatPage(ctx *gin.Context) {
-	handler.ChatPage(ctx,c.client)
+	handler.ChatPage(ctx, c.client)
 }

@@ -24,14 +24,14 @@ func NewChatRoutes(c *gin.Engine, cfg config.Config) {
 		log.Fatalf("error not connected with grpc client : %v", err.Error())
 	}
 
-	userClient,err := user.ClientDial(cfg)
+	userClient, err := user.ClientDial(cfg)
 	if err != nil {
 		log.Fatalf("error not connected with grpc user client : %v", err.Error())
 	}
 
 	chatHandler := &Chat{
-		cfg:    &cfg,
-		client: client,
+		cfg:        &cfg,
+		client:     client,
 		userClient: userClient,
 	}
 
@@ -39,7 +39,7 @@ func NewChatRoutes(c *gin.Engine, cfg config.Config) {
 
 	user := apiVersion.Group("/user")
 	{
-		user.GET("/chat",chatHandler.Chat)
+		user.GET("/chat", chatHandler.Chat)
 	}
-	c.GET("/chat",chatHandler.ChatPage)
+	c.GET("/chat", chatHandler.ChatPage)
 }

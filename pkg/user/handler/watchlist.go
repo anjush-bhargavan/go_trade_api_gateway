@@ -61,7 +61,6 @@ func AddTOWatchlistHandler(c *gin.Context, client pb.UserServiceClient) {
 	})
 }
 
-
 // ViewWatchlistHandler handles the user to view their watchlist request.
 func ViewWatchlistHandler(c *gin.Context, client pb.UserServiceClient) {
 	timeout := time.Second * 1000

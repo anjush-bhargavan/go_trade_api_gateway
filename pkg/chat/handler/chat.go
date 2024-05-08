@@ -15,7 +15,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-//Upgrader variable specifies the parmeters of upgrading HTTP request
+// Upgrader variable specifies the parmeters of upgrading HTTP request
 var Upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -24,7 +24,7 @@ var Upgrader = websocket.Upgrader{
 	},
 }
 
-//HandleWebSocketConnection handles the weboscket connection and bidirectional streaming
+// HandleWebSocketConnection handles the weboscket connection and bidirectional streaming
 func HandleWebSocketConnection(c *gin.Context, client pb.ChatServiceClient, userClient userpb.UserServiceClient) {
 	ctx := c.Request.Context()
 
@@ -88,12 +88,12 @@ func HandleWebSocketConnection(c *gin.Context, client pb.ChatServiceClient, user
 			}
 
 			go ch.sentMessage(message.Message)
-			go ch.receiveMessage(conn, uint32(message.UserID),uint32(message.ReceiverID))
+			go ch.receiveMessage(conn, uint32(message.UserID), uint32(message.ReceiverID))
 		}
 	}
 }
 
-//ChatPage loads the chat page.
+// ChatPage loads the chat page.
 func ChatPage(c *gin.Context, client pb.ChatServiceClient) {
 	timeout := time.Second * 1000
 	ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)

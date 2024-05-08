@@ -39,7 +39,7 @@ func UserSignupHandler(c *gin.Context, client pb.UserServiceClient) {
 		for _, e := range err.(validator.ValidationErrors) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
 				"Message": fmt.Sprintf("Error in field %v, error: %v", e.Field(), e.Tag()),
-				"Error": e})
+				"Error":   e})
 		}
 	}
 

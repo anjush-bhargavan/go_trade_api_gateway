@@ -115,15 +115,17 @@ func (u *User) GetBids(ctx *gin.Context) {
 	handler.GetBidsHandler(ctx, u.client)
 }
 
-
+// Payment to load payment page and do payment using razorpay.
 func (u *User) Payment(ctx *gin.Context) {
-	handler.UserPaymentHandler(ctx,u.client,u.cfg)
+	handler.UserPaymentHandler(ctx, u.client, u.cfg)
 }
 
+// PaymentSuccess for completeing the procedure after payment success
 func (u *User) PaymentSuccess(ctx *gin.Context) {
-	handler.UserPaymentSuccessHandler(ctx,u.client)
+	handler.UserPaymentSuccessHandler(ctx, u.client)
 }
 
+// SuccessPage is to load the payment completed page.
 func (u *User) SuccessPage(ctx *gin.Context) {
 	handler.SuccessPageHandler(ctx)
 }

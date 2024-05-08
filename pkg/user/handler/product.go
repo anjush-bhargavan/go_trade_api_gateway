@@ -42,7 +42,6 @@ func UserFindProductHandler(c *gin.Context, client pb.UserServiceClient) {
 	})
 }
 
-
 // UserFindAllProductHandler function will send find all Product request to client.
 func UserFindAllProductHandler(c *gin.Context, client pb.UserServiceClient) {
 	timeout := time.Second * 1000

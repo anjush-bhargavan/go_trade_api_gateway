@@ -1,14 +1,12 @@
 package handler
 
-
-
 import (
 	"context"
+	pb "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/admin/adminpb"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"time"
-	pb "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/admin/adminpb"
-	"github.com/gin-gonic/gin"
 )
 
 // BlockUserHandler function will send block user request to client.

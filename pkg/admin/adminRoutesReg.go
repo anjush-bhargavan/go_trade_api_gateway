@@ -50,7 +50,6 @@ func (a *Admin) FindProducts(ctx *gin.Context) {
 	handler.FindAllProductHandler(ctx, a.Client)
 }
 
-
 // BlockUser handles the admin to block user request.
 func (a *Admin) BlockUser(ctx *gin.Context) {
 	handler.BlockUserHandler(ctx, a.Client)
@@ -61,12 +60,10 @@ func (a *Admin) OrderHistory(ctx *gin.Context) {
 	handler.OrderHistoryHandler(ctx, a.Client)
 }
 
-
 // UserOrders handles the admin to find all orders of a user request.
 func (a *Admin) UserOrders(ctx *gin.Context) {
 	handler.UserOrdersHandler(ctx, a.Client)
 }
-
 
 // FindOrder handles the admin to find order request.
 func (a *Admin) FindOrder(ctx *gin.Context) {

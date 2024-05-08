@@ -32,26 +32,26 @@ func NewAdminRoute(c *gin.Engine, cfg config.Config) {
 	admin := apiVersion.Group("/admin")
 	{
 		admin.POST("/login", adminHandler.AdminLogin)
-		
+
 	}
 
 	auth := admin.Group("/auth")
-	auth.Use(middleware.AdminAuthorization(cfg.SECRETKEY,"admin"))
+	auth.Use(middleware.AdminAuthorization(cfg.SECRETKEY, "admin"))
 	{
-		auth.POST("/category",adminHandler.AddCategory)
-		auth.PATCH("/category/:id",adminHandler.EditCategory)
-		auth.DELETE("/category/:id",adminHandler.RemoveCategory)
-		auth.GET("/category/:id",adminHandler.FindCategory)
-		auth.GET("/category",adminHandler.FindCategories)
+		auth.POST("/category", adminHandler.AddCategory)
+		auth.PATCH("/category/:id", adminHandler.EditCategory)
+		auth.DELETE("/category/:id", adminHandler.RemoveCategory)
+		auth.GET("/category/:id", adminHandler.FindCategory)
+		auth.GET("/category", adminHandler.FindCategories)
 
-		auth.DELETE("/product/:id",adminHandler.RemoveProduct)
-		auth.GET("/product/:id",adminHandler.FindProduct)
-		auth.GET("/products",adminHandler.FindProducts)
+		auth.DELETE("/product/:id", adminHandler.RemoveProduct)
+		auth.GET("/product/:id", adminHandler.FindProduct)
+		auth.GET("/products", adminHandler.FindProducts)
 
-		auth.PATCH("/user/:id",adminHandler.BlockUser)
+		auth.PATCH("/user/:id", adminHandler.BlockUser)
 
-		auth.GET("/orders",adminHandler.OrderHistory)
-		auth.GET("/orders/:id",adminHandler.UserOrders)
-		auth.GET("/order/:id",adminHandler.FindOrder)
+		auth.GET("/orders", adminHandler.OrderHistory)
+		auth.GET("/orders/:id", adminHandler.UserOrders)
+		auth.GET("/order/:id", adminHandler.FindOrder)
 	}
 }

@@ -41,7 +41,6 @@ func AddBidHandler(c *gin.Context, client pb.UserServiceClient) {
 		return
 	}
 
-
 	response, err := client.AddBid(ctx, &pb.UserBid{
 		User_ID:    uint32(userID),
 		Product_ID: uint32(bid.ProductID),

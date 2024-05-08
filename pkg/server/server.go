@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 // Server represents the model of the server with a Gin engine.
 type Server struct {
-	R *gin.Engine 
+	R *gin.Engine
 }
 
 // StartServer method starts the server on the specified port.
