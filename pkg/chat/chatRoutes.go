@@ -10,14 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// User represents the User route handler, containing configuration and gRPC client.
+// Chat represents the chat route handler, containing configuration and gRPC client.
 type Chat struct {
 	cfg        *config.Config
 	userClient userpb.UserServiceClient
 	client     pb.ChatServiceClient
 }
 
-// NewUserRoute initializes the user routes and handlers.
+// NewChatRoutes initializes the chat routes and handlers.
 func NewChatRoutes(c *gin.Engine, cfg config.Config) {
 	client, err := ClientDial(cfg)
 	if err != nil {

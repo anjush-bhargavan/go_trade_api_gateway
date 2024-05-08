@@ -9,8 +9,9 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+//ClientDial function setup the connection between chat service and api gateway
 func ClientDial(cfg config.Config) (pb.ChatServiceClient, error) {
-	grpc, err := grpc.Dial(":"+cfg.CHATPORT, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	grpc, err := grpc.Dial(cfg.CHATPORT, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("error Dialing to grpc chat client: %s, ", cfg.CHATPORT)
 		return nil, err

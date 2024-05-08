@@ -5,12 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// AddBid handles the request to add a bid to the product by the user.
+// Chat handles the websocket connection in the chat page.
 func (c *Chat) Chat(ctx *gin.Context) {
 	handler.HandleWebSocketConnection(ctx, c.client,c.userClient)
 }
 
-// AddBid handles the request to add a bid to the product by the user.
+// ChatPage handles to load the chat page
 func (c *Chat) ChatPage(ctx *gin.Context) {
 	handler.ChatPage(ctx,c.client)
 }

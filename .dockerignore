@@ -1,0 +1,21 @@
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore editor and IDE files
+.vscode
+.idea
+
+# Ignore temporary files
+*.tmp
+*.log
+
+# Ignore .env files
+# .env
+
+# Dependency management files
+vendor/
+
+# Build artifacts
+bin/
+

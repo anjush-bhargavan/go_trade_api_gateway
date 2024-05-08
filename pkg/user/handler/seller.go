@@ -133,6 +133,15 @@ func EditProductHandler(c *gin.Context, client pb.UserServiceClient) {
 		return
 	}
 
+	ProductIDString := c.Param("id")
+	ProductID, err := strconv.Atoi(ProductIDString)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
+			"Message": "error while converting categroyID to int",
+			"Error":   err.Error()})
+		return
+	}
+
 	var product dto.Product
 
 	if err := c.BindJSON(&product); err != nil {
@@ -143,6 +152,7 @@ func EditProductHandler(c *gin.Context, client pb.UserServiceClient) {
 	}
 
 	response, err := client.EditProductUser(ctx, &pb.UserProduct{
+		Product_ID: uint32(ProductID),
 		Seller_ID: uint32(userID),
 		Name:      product.Name,
 		Category: &pb.UserCategory{

@@ -15,7 +15,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
+//Upgrader variable specifies the parmeters of upgrading HTTP request
+var Upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
@@ -23,16 +24,18 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+//HandleWebSocketConnection handles the weboscket connection and bidirectional streaming
 func HandleWebSocketConnection(c *gin.Context, client pb.ChatServiceClient, userClient userpb.UserServiceClient) {
+	ctx := c.Request.Context()
 
-	ctx := c.Request.Context() // Get the request context
-
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	conn, err := Upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println("Error upgrading to WebSocket:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 	defer conn.Close()
+	log.Println("WebSocket connection established")
 
 	for {
 		select {
@@ -44,7 +47,7 @@ func HandleWebSocketConnection(c *gin.Context, client pb.ChatServiceClient, user
 			_, msg, err := conn.ReadMessage()
 			if err != nil {
 				log.Println("Error reading message:", err)
-				break
+				return
 			}
 
 			var message dto.Message
@@ -54,108 +57,102 @@ func HandleWebSocketConnection(c *gin.Context, client pb.ChatServiceClient, user
 				continue
 			}
 
-			//checking the user and receiver IDs
+			// Checking the user and receiver IDs
 			_, err = userClient.ViewProfile(ctx, &userpb.ID{ID: uint32(message.UserID)})
 			if err != nil {
-				log.Fatalf("error fetching user or invalid userID")
+				log.Println("Error fetching user or invalid userID:", err)
+				continue
 			}
 
 			_, err = userClient.ViewProfile(ctx, &userpb.ID{ID: uint32(message.ReceiverID)})
 			if err != nil {
-				log.Fatalf("error fetching receiver or invalid receiverID")
+				log.Println("Error fetching receiver or invalid receiverID:", err)
+				continue
 			}
-			// fmt.Println(user.User_Name, receiver.User_Name)
-			// Process message (e.g., store it in a database)
+
 			stream, err := client.Connect(ctx)
 			if err != nil {
-				log.Fatalf("error calling chat service")
+				log.Println("Error calling chat service:", err)
+				continue
 			}
 			ch := &clientHandle{
 				stream:     stream,
-				userID:     message.UserID,
-				receiverID: message.ReceiverID,
+				userID:     uint32(message.UserID),
+				receiverID: uint32(message.ReceiverID),
 			}
-			// log.Printf("Received message from %d to %d: %s\n", message.UserID, message.ReceiverID, message.Message)
 
-			// Echo message back to sender
 			err = conn.WriteMessage(websocket.TextMessage, msg)
 			if err != nil {
 				log.Println("Error writing message:", err)
-				break
+				return
 			}
 
 			go ch.sentMessage(message.Message)
-			go ch.receiveMessage(conn, message.UserID, message.ReceiverID)
+			go ch.receiveMessage(conn, uint32(message.UserID),uint32(message.ReceiverID))
 		}
 	}
 }
 
+//ChatPage loads the chat page.
 func ChatPage(c *gin.Context, client pb.ChatServiceClient) {
 	timeout := time.Second * 1000
-	ctx, cancel := context.WithTimeout(c, timeout)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
 	defer cancel()
 
 	id := c.Query("id")
 	userID, err := strconv.Atoi(id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
-			"Message": "error in converting id to int",
-			"Error":   err.Error()})
-		return
-	}
-	receiverId := c.Query("receiverId")
-	receiverID, err := strconv.Atoi(receiverId)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
-			"Message": "error in converting id to int",
-			"Error":   err.Error()})
+		log.Println("Error converting id to int:", err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Message": "Error converting id to int", "Error": err.Error()})
 		return
 	}
 
-	response, err := client.FetchHistory(ctx, &pb.ChatID{
-		User_ID:     uint32(userID),
-		Receiver_ID: uint32(receiverID),
-	})
+	receiverIDStr := c.Query("receiverId")
+	receiverID, err := strconv.Atoi(receiverIDStr)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
-			"Message": "error in calling chat client",
-			"Error":   err.Error()})
+		log.Println("Error converting receiverId to int:", err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest, "Message": "Error converting receiverId to int", "Error": err.Error()})
 		return
 	}
-	c.HTML(http.StatusOK, "chat.html", gin.H{"response": response.Chats,"id":userID})
+
+	response, err := client.FetchHistory(ctx, &pb.ChatID{User_ID: uint32(userID), Receiver_ID: uint32(receiverID)})
+	if err != nil {
+		log.Println("Error calling chat client:", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"Status": http.StatusInternalServerError, "Message": "Error calling chat client", "Error": err.Error()})
+		return
+	}
+
+	c.HTML(http.StatusOK, "chat.html", gin.H{"response": response.Chats, "id": userID})
 }
 
 type clientHandle struct {
-	userID     uint
-	receiverID uint
+	userID     uint32
+	receiverID uint32
 	stream     pb.ChatService_ConnectClient
 }
 
 func (c *clientHandle) sentMessage(msg string) {
 	message := &pb.Message{
-		User_ID:     uint32(c.userID),
-		Receiver_ID: uint32(c.receiverID),
+		User_ID:     c.userID,
+		Receiver_ID: c.receiverID,
 		Content:     msg,
 	}
 
 	err := c.stream.Send(message)
 	if err != nil {
-		log.Printf("Error while sending message to server :: %v", err)
+		log.Printf("Error while sending message to server: %v", err)
 	}
-
 }
 
-// receive message
-func (ch *clientHandle) receiveMessage(c *websocket.Conn, userID, receiverID uint) {
-
-	//create a loop
+func (c *clientHandle) receiveMessage(conn *websocket.Conn, userID, receiverID uint32) {
 	for {
-		mssg, err := ch.stream.Recv()
+		mssg, err := c.stream.Recv()
 		if err != nil {
-			log.Printf("Error in receiving message from server :: %v", err)
+			log.Printf("Error receiving message from server: %v", err)
+			return
 		}
 
-		if uint32(userID) == mssg.Receiver_ID && receiverID == uint(mssg.User_ID) {
+		if userID == mssg.Receiver_ID && receiverID == mssg.User_ID {
 			dom := &dto.Message{
 				UserID:     uint(mssg.User_ID),
 				ReceiverID: uint(mssg.Receiver_ID),
@@ -163,24 +160,15 @@ func (ch *clientHandle) receiveMessage(c *websocket.Conn, userID, receiverID uin
 			}
 			msg, err := json.Marshal(dom)
 			if err != nil {
-				log.Println("Error decoding JSON:", err)
-				continue
+				log.Println("Error encoding JSON:", err)
+				return
 			}
-			// err = c.WriteMessage(websocket.TextMessage, msg)
-			// if err != nil {
-			// 	log.Println("Error writing message:", err)
-			// 	break
-			// }
-			// Write received message to WebSocket connection
-			err = c.WriteMessage(websocket.TextMessage, (msg))
+
+			err = conn.WriteMessage(websocket.TextMessage, msg)
 			if err != nil {
 				log.Println("Error writing message:", err)
-				break
+				return
 			}
 		}
-
-		//print message to console
-		// fmt.Printf("%s : %d to %d\n", mssg.Content, mssg.User_ID, mssg.Receiver_ID)
-
 	}
 }

@@ -2,12 +2,15 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
 	dto "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/DTO"
 	pb "github.com/anjush-bhargavan/go_trade_api_gateway/pkg/user/userpb"
+	"github.com/anjush-bhargavan/go_trade_api_gateway/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 // UserSignupHandler handles the user signup request.
@@ -24,17 +27,33 @@ func UserSignupHandler(c *gin.Context, client pb.UserServiceClient) {
 		return
 	}
 
+	validate := validator.New()
+	validate.RegisterValidation("email", utils.EmailValidation)
+	validate.RegisterValidation("phone", utils.PhoneNumberValidation)
+	err := validate.Struct(user)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
+			"Message": "validation error",
+			"Error":   err.Error()})
+
+		for _, e := range err.(validator.ValidationErrors) {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
+				"Message": fmt.Sprintf("Error in field %v, error: %v", e.Field(), e.Tag()),
+				"Error": e})
+		}
+	}
+
 	response, err := client.UserSignup(ctx, &pb.Signup{
-		User_Name: user.UserName,
-		Email:     user.Email,
-		Password:  user.Password,
-		Mobile:    user.Mobile,
+		User_Name:     user.UserName,
+		Email:         user.Email,
+		Password:      user.Password,
+		Mobile:        user.Mobile,
 		Referral_Code: user.ReferralCode,
 	})
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
 			"Message": "error in client response",
-			"Data" : response,
+			"Data":    response,
 			"Error":   err.Error()})
 		return
 	}
@@ -60,15 +79,14 @@ func VerificationHandler(c *gin.Context, client pb.UserServiceClient) {
 		return
 	}
 
-	response,err := client.VerfiyUser(ctx,&pb.OTP{
+	response, err := client.VerfiyUser(ctx, &pb.OTP{
 		Email: verificationDetails.Email,
-		OTP: verificationDetails.OTP,
-
+		OTP:   verificationDetails.OTP,
 	})
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
 			"Message": "error in client response",
-			"Data" : response,
+			"Data":    response,
 			"Error":   err.Error()})
 		return
 	}
@@ -81,7 +99,6 @@ func VerificationHandler(c *gin.Context, client pb.UserServiceClient) {
 
 }
 
-
 // UserLoginHandler function will send the login request to client.
 func UserLoginHandler(c *gin.Context, client pb.UserServiceClient) {
 	timeout := time.Second * 1000
@@ -92,6 +109,15 @@ func UserLoginHandler(c *gin.Context, client pb.UserServiceClient) {
 	if err := c.BindJSON(&user); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
 			"Message": "error while binding json",
+			"Error":   err.Error()})
+		return
+	}
+
+	validate := validator.New()
+	err := validate.Struct(user)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Status": http.StatusBadRequest,
+			"Message": "validation error",
 			"Error":   err.Error()})
 		return
 	}
